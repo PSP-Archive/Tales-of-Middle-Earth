@@ -1,0 +1,117 @@
+# File: Makefile.psp
+
+# Purpose: Makefile for Sony Playstation Portable, v2
+
+BASESRCS = \
+  z-rand.c z-util.c z-form.c z-virt.c z-term.c z-sock.c \
+  variable.c tables.c plots.c util.c cave.c dungeon.c \
+  melee1.c melee2.c modules.c \
+  object1.c object2.c randart.c squeltch.c traps.c \
+  monster1.c monster2.c monster3.c ghost.c \
+  xtra1.c xtra2.c skills.c powers.c gods.c \
+  spells1.c spells2.c \
+  status.c files.c notes.c loadsave.c \
+  cmd1.c cmd2.c cmd3.c cmd4.c cmd5.c cmd6.c cmd7.c \
+  help.c \
+  generate.c gen_maze.c gen_evol.c wild.c levels.c store.c bldg.c \
+  cmovie.c irc.c \
+  wizard2.c init2.c birth.c wizard1.c init1.c \
+  main-psp.c 
+
+LUASRCS = \
+  script.c lua_bind.c \
+  w_util.c w_player.c w_z_pack.c w_obj.c w_mnster.c w_spells.c w_quest.c w_play_c.c w_dun.c
+  
+TOLUASRCS = \
+  lua/lapi.c lua/lcode.c lua/ldebug.c lua/ldo.c lua/lfunc.c lua/lgc.c \
+  lua/llex.c lua/lmem.c lua/lobject.c lua/lparser.c lua/lstate.c lua/lstring.c \
+  lua/ltable.c lua/ltests.c lua/ltm.c lua/lundump.c lua/lvm.c lua/lzio.c \
+  lua/lauxlib.c lua/lbaselib.c lua/ldblib.c lua/liolib.c lua/lstrlib.c \
+  lua/tolua_lb.c lua/tolua_rg.c lua/tolua_tt.c lua/tolua_tm.c lua/tolua_gp.c \
+  lua/tolua_eh.c lua/tolua_bd.c
+
+LUAOBJS = \
+  script.o lua_bind.o \
+  w_util.o w_player.o w_z_pack.o w_obj.o w_mnster.o w_spells.o w_quest.o w_play_c.o w_dun.o
+
+TOLUAOBJS = \
+  lua/lapi.o lua/lcode.o lua/ldebug.o lua/ldo.o lua/lfunc.o lua/lgc.o \
+  lua/llex.o lua/lmem.o lua/lobject.o lua/lparser.o lua/lstate.o lua/lstring.o \
+  lua/ltable.o lua/ltests.o lua/ltm.o lua/lundump.o lua/lvm.o lua/lzio.o \
+  lua/lauxlib.o lua/lbaselib.o lua/ldblib.o lua/liolib.o lua/lstrlib.o \
+  lua/tolua_lb.o lua/tolua_rg.o lua/tolua_tt.o lua/tolua_tm.o lua/tolua_gp.o \
+  lua/tolua_eh.o lua/tolua_bd.o
+
+BASEOBJS = \
+  z-rand.o z-util.o z-form.o z-virt.o z-term.o z-sock.o \
+  variable.o tables.o plots.o util.o cave.o dungeon.o \
+  melee1.o melee2.o modules.o \
+  object1.o object2.o randart.o squeltch.o traps.o \
+  monster1.o monster2.o monster3.o ghost.o \
+  xtra1.o xtra2.o skills.o powers.o gods.o \
+  spells1.o spells2.o \
+  status.o files.o notes.o loadsave.o \
+  cmd1.o cmd2.o cmd3.o cmd4.o cmd5.o cmd6.o cmd7.o \
+  help.o \
+  generate.o gen_maze.o gen_evol.o wild.o levels.o store.o bldg.o \
+  cmovie.o irc.o \
+  wizard2.o init2.o birth.o wizard1.o init1.o \
+  main-psp.o
+  
+  #
+# Base sources and objects
+#
+
+SRCS = $(LUASRCS) $(BASESRCS) 
+OBJS = $(LUAOBJS) $(BASEOBJS) 
+
+LIBDIR = ./lib/
+
+CFLAGS = -O2 -G0 -fno-strength-reduce -Wall -D"USE_PSP" -I$(PSPSDK)/include $(INCLUDES)
+
+LDFLAGS = -L$(PSPSDK)/lib
+
+PSPSDK=$(shell psp-config --pspsdk-path)
+
+LIBS = -lpspdebug -lpspdisplay -lpspge -lpsppower -lpspctrl -lstdc++ -lc -lpspuser -lpspkernel
+
+#
+# Lua support
+#
+
+INCLUDES += -Ilua -I.
+DEFINES += -DUSE_LUA
+SRCS = $(LUASRCS) $(TOLUASRCS) $(BASESRCS)
+OBJS = $(LUAOBJS) $(TOLUAOBJS) $(BASEOBJS)
+
+# Force recreation of stub files when lua source files are updated
+# To be included in dependency rules
+TOLUADEP = $(TOLUASRCS) lua/tolua.c lua/tolualua.c
+
+
+DEFAULT_RULE = 3xx
+TARGET_ARCHITECTURE = psp
+PSP_FW_VERSION=371
+BUILD_PRX = 1
+
+TARGET = tome
+TARGET_CAPS = TOME
+VERSION = 2.3.1.1
+PSP_EBOOT_TITLE = $(TARGET)
+PSP_EBOOT_SFO = PARAM.SFO
+PSP_EBOOT_ICON = ../psp/tome_icon.png
+PSP_EBOOT_ICON1 = NULL
+PSP_EBOOT_UNKPNG = NULL
+PSP_EBOOT_PIC1 = ../psp/tome.png
+PSP_EBOOT_SND0 = NULL
+PSP_EBOOT_PSAR = NULL
+PSP_EBOOT = EBOOT.PBP
+
+EXTRA_TARGETS = EBOOT.PBP
+
+TOLUA = ./tolua
+
+RELEASE_DIR = ../../$(TARGET)_$(VERSION)
+
+include $(PSPSDK)/lib/build.mak
+
